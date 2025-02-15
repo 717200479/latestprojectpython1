@@ -3,7 +3,7 @@ import sqlite3
 import hashlib
 import logging
 import re
-
+#mohammeed
 
 # Configure logging to file
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -37,6 +37,7 @@ def init_db():
             requirements TEXT
         )
     ''')
+    
     
     conn.commit()
     conn.close()
