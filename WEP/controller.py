@@ -7,37 +7,91 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def home() -> str:
+    """
+    Render the home page.
+    
+    Returns:
+        The rendered index.html template
+    """
+    try:
+        logger.info("Accessed home page")
+        return render_template('index.html')
+    except Exception as e:
+        logger.error(f"Error rendering home page: {e}")
+        flash("حدث خطأ أثناء تحميل الصفحة الرئيسية", "danger")
+        return redirect(url_for('login'))
+
 
 @app.route('/tools_boxes', methods=['GET'])
-def tools_boxes():
-    logger.info("Accessed Tools & Boxes page.")
-    return render_template('tools_boxes.html')
+def tools_boxes() -> str:
+    """
+    Render the tools and boxes page.
+    
+    Returns:
+        The rendered tools_boxes.html template
+    """
+    try:
+        logger.info("Accessed Tools & Boxes page.")
+        return render_template('tools_boxes.html')
+    except Exception as e:
+        logger.error(f"Error rendering tools & boxes page: {e}")
+        flash("حدث خطأ أثناء تحميل صفحة الأدوات والصناديق", "danger")
+        return redirect(url_for('home'))
+
 
 @app.route('/imei_services', methods=['GET', 'POST'])
-def imei_services():
-    if request.method == 'POST':
-        device = request.form['device']
-        imei = request.form['imei']
-        # Process the service request here
-        flash('تم تقديم طلب الخدمة بنجاح!', 'success')
-        logger.info(f"IMEI service requested for device: {device}, IMEI: {imei}")
-        return redirect(url_for('imei_services'))
+def imei_services() -> str:
+    """
+    Handle IMEI services requests.
     
-    logger.info("Accessed IMEI services page.")
-    return render_template('imei_services.html')
+    Returns:
+        The rendered imei_services.html template or redirect
+    """
+    try:
+        if request.method == 'POST':
+            device = request.form.get('device', '')
+            imei = request.form.get('imei', '')
+            
+            if not device or not imei:
+                flash('يجب ملء جميع الحقول المطلوبة', 'danger')
+                return redirect(url_for('imei_services'))
+            
+            # Process the service request here
+            flash('تم تقديم طلب الخدمة بنجاح!', 'success')
+            logger.info(f"IMEI service requested for device: {device}, IMEI: {imei}")
+            return redirect(url_for('imei_services'))
+        
+        logger.info("Accessed IMEI services page.")
+        return render_template('imei_services.html')
+    except Exception as e:
+        logger.error(f"Error in IMEI services: {e}")
+        flash("حدث خطأ أثناء معالجة طلب الخدمة", "danger")
+        return redirect(url_for('home'))
+
 
 @app.route('/remote', methods=['GET'])
-def remote():
-    logger.info("Accessed remote services page.")
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT DISTINCT brand FROM services')
-    brands = cursor.fetchall()
-    conn.close()
+def remote() -> str:
+    """
+    Render the remote services page with available brands.
     
-    return render_template('remote.html', brands=brands)
+    Returns:
+        The rendered remote.html template with brands data
+    """
+    try:
+        logger.info("Accessed remote services page.")
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT DISTINCT brand FROM services')
+        brands = cursor.fetchall()
+        return render_template('remote.html', brands=brands)
+    except sqlite3.Error as e:
+        logger.error(f"Error retrieving brands: {e}")
+        flash("حدث خطأ أثناء تحميل صفحة الخدمات عن بعد", "danger")
+        return redirect(url_for('home'))
+    finally:
+        conn.close()
+
 
 @app.route('/services/<brand>', methods=['GET'])
 def get_services(brand):
