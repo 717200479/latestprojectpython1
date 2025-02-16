@@ -63,3 +63,13 @@ class ServiceService:
     @staticmethod
     def get_all_services():
         return get_all_services()
+
+    @staticmethod
+    def register_user(username, password_hashed, email, phone, smartphone_services, secret):
+        # اكتب الكود لتسجيل المستخدم مع `secret`
+        pass
+
+    @staticmethod
+    def login_user(username, password):
+        # اكتب الكود لتسجيل الدخول
+        pass

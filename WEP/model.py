@@ -12,6 +12,28 @@ import logging
 import re
 
 
+
+def get_user_by_id(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    return cursor.fetchone()
+
+def register_user(username, password_hashed, email, phone, smartphone_services, secret):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (username, password, email, phone, smartphone_services, secret) VALUES (?, ?, ?, ?, ?, ?)",
+                       (username, password_hashed, email, phone, smartphone_services, secret))
+        conn.commit()
+        return True, "تم التسجيل بنجاح!"
+    except sqlite3.IntegrityError:
+        return False, "اسم المستخدم موجود بالفعل."
+    finally:
+        conn.close()
+
+# باقي الدوال...
+
 # Configure logging to file
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -185,7 +207,7 @@ def add_user(username: str, password: str, email: str, phone: str, is_admin: boo
         
     # Validate phone number format (Egyptian numbers)
     if not re.match(r'^01[0125][0-9]{8}$', phone):
-        raise ValueError("رقم الهاتف يجب أن يكون رقم مصري صحيح (11 رقم)!")
+        raise ValueError("رقم الهاتف يجب أن يكون رقم يمني صحيح (9 رقم)!")
     
     try:
         conn = get_db_connection()

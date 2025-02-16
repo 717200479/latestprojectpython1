@@ -1,4 +1,6 @@
 import re
+import pyotp
+import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from model import *
 from services import UserService, ServiceService
@@ -8,12 +10,6 @@ app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def home() -> str:
-    """
-    Render the home page.
-    
-    Returns:
-        The rendered index.html template
-    """
     try:
         logger.info("Accessed home page")
         return render_template('index.html')
@@ -22,15 +18,8 @@ def home() -> str:
         flash("حدث خطأ أثناء تحميل الصفحة الرئيسية", "danger")
         return redirect(url_for('login'))
 
-
 @app.route('/tools_boxes', methods=['GET'])
 def tools_boxes() -> str:
-    """
-    Render the tools and boxes page.
-    
-    Returns:
-        The rendered tools_boxes.html template
-    """
     try:
         logger.info("Accessed Tools & Boxes page.")
         return render_template('tools_boxes.html')
@@ -39,15 +28,8 @@ def tools_boxes() -> str:
         flash("حدث خطأ أثناء تحميل صفحة الأدوات والصناديق", "danger")
         return redirect(url_for('home'))
 
-
 @app.route('/imei_services', methods=['GET', 'POST'])
 def imei_services() -> str:
-    """
-    Handle IMEI services requests.
-    
-    Returns:
-        The rendered imei_services.html template or redirect
-    """
     try:
         if request.method == 'POST':
             device = request.form.get('device', '')
@@ -57,7 +39,6 @@ def imei_services() -> str:
                 flash('يجب ملء جميع الحقول المطلوبة', 'danger')
                 return redirect(url_for('imei_services'))
             
-            # Process the service request here
             flash('تم تقديم طلب الخدمة بنجاح!', 'success')
             logger.info(f"IMEI service requested for device: {device}, IMEI: {imei}")
             return redirect(url_for('imei_services'))
@@ -69,15 +50,8 @@ def imei_services() -> str:
         flash("حدث خطأ أثناء معالجة طلب الخدمة", "danger")
         return redirect(url_for('home'))
 
-
 @app.route('/remote', methods=['GET'])
 def remote() -> str:
-    """
-    Render the remote services page with available brands.
-    
-    Returns:
-        The rendered remote.html template with brands data
-    """
     try:
         logger.info("Accessed remote services page.")
         conn = get_db_connection()
@@ -91,7 +65,6 @@ def remote() -> str:
         return redirect(url_for('home'))
     finally:
         conn.close()
-
 
 @app.route('/services/<brand>', methods=['GET'])
 def get_services(brand):
@@ -130,8 +103,9 @@ def register():
             flash('خطأ: يجب أن تتكون كلمة المرور من 8 أحرف على الأقل، وتحتوي على أحرف وأرقام ورموز خاصة.', 'danger')
             return render_template('register.html')
 
+        secret = pyotp.random_base32()  # توليد مفتاح 2FA
         password_hashed = hash_password(password)
-        success, message = UserService.register_user(username, password_hashed, email, phone, smartphone_services == 'yes')
+        success, message = UserService.register_user(username, password_hashed, email, phone, smartphone_services == 'yes', secret)
         
         if success:
             flash(message, 'success')
@@ -143,10 +117,21 @@ def register():
 
     return render_template('register.html')
 
-@app.route('/users', methods=['GET'])
-def list_users():
-    users = get_all_users()
-    return jsonify(users)
+@app.route('/setup_2fa', methods=['GET', 'POST'])
+def setup_2fa():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('يجب تسجيل الدخول أولاً', 'danger')
+        return redirect(url_for('login'))
+
+    user = get_user_by_id(user_id)
+    if request.method == 'POST':
+        flash('تم تفعيل التوثيق الثنائي بنجاح!', 'success')
+        return redirect(url_for('home'))
+
+    totp = pyotp.TOTP(user.secret)
+    qr_code_url = totp.provisioning_uri(name=user.username, issuer='YourAppName')
+    return render_template('setup_2fa.html', qr_code_url=qr_code_url)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -160,7 +145,8 @@ def login():
         
         if success:
             session['user_id'] = result[0]
-            session['is_admin'] = result[6]
+            if result[7]:  # تحقق إذا كان 2FA مفعلًا
+                return redirect(url_for('verify_2fa'))
             flash('Logged in successfully!', 'success')
             logger.info(f"User logged in: {username}")
             return redirect(url_for('balance'))
@@ -169,6 +155,21 @@ def login():
             logger.warning(f"Login failed for {username}: Invalid credentials.")
     
     return render_template('login.html')
+
+@app.route('/verify_2fa', methods=['GET', 'POST'])
+def verify_2fa():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        user = get_user_by_id(user_id)
+        totp = pyotp.TOTP(user.secret)
+
+        if totp.verify(request.form['token']):
+            session['logged_in'] = True
+            return redirect(url_for('balance'))
+        else:
+            flash('رمز التوثيق غير صحيح!', 'danger')
+
+    return render_template('verify_2fa.html')
 
 @app.route('/increase_credit', methods=['POST'])
 def increase_credit():

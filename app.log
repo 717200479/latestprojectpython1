@@ -383,3 +383,43 @@
 2025-02-15 22:15:53,112 - WARNING -  * Debugger is active!
 2025-02-15 22:15:53,128 - INFO -  * Debugger PIN: 299-829-411
 2025-02-15 22:15:53,169 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-02-16 08:53:40,251 - INFO - Database initialized successfully.
+2025-02-16 08:53:40,286 - INFO -  * Restarting with stat
+2025-02-16 08:53:41,069 - INFO - Database initialized successfully.
+2025-02-16 08:53:41,102 - WARNING -  * Debugger is active!
+2025-02-16 08:53:41,106 - INFO -  * Debugger PIN: 299-829-411
+2025-02-16 08:53:41,177 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-02-16 08:55:14,027 - INFO - Database initialized successfully.
+2025-02-16 08:55:14,068 - INFO -  * Restarting with stat
+2025-02-16 08:55:15,151 - INFO - Database initialized successfully.
+2025-02-16 08:55:15,171 - WARNING -  * Debugger is active!
+2025-02-16 08:55:15,187 - INFO -  * Debugger PIN: 299-829-411
+2025-02-16 08:55:15,239 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-02-16 08:59:09,964 - INFO -  * Detected change in 'c:\\Users\\pc\\Desktop\\latestprojectpython1\\WEP\\model.py', reloading
+2025-02-16 08:59:10,007 - INFO -  * Restarting with stat
+2025-02-16 08:59:11,235 - INFO - Database initialized successfully.
+2025-02-16 08:59:11,260 - WARNING -  * Debugger is active!
+2025-02-16 08:59:11,284 - INFO -  * Debugger PIN: 299-829-411
+2025-02-16 08:59:11,387 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-02-16 10:38:22,548 - INFO - Accessed home page
+2025-02-16 10:38:22,669 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:22] "GET / HTTP/1.1" 200 -
+2025-02-16 10:38:23,709 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:23] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-02-16 10:38:28,953 - INFO - Accessed remote services page.
+2025-02-16 10:38:29,079 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:29] "GET /remote HTTP/1.1" 200 -
+2025-02-16 10:38:31,212 - INFO - Retrieved all services successfully
+2025-02-16 10:38:31,332 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:31] "GET /admin/services HTTP/1.1" 200 -
+2025-02-16 10:38:40,548 - INFO - Accessed login page.
+2025-02-16 10:38:40,666 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:40] "GET /login HTTP/1.1" 200 -
+2025-02-16 10:38:43,014 - INFO - Accessed registration page.
+2025-02-16 10:38:43,140 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:43] "GET /register HTTP/1.1" 200 -
+2025-02-16 10:38:45,261 - INFO - Accessed IMEI services page.
+2025-02-16 10:38:45,400 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:45] "GET /imei_services HTTP/1.1" 200 -
+2025-02-16 10:38:51,009 - INFO - Accessed remote services page.
+2025-02-16 10:38:51,014 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:51] "GET /remote HTTP/1.1" 200 -
+2025-02-16 10:38:53,252 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:53] "GET /services/Sony HTTP/1.1" 200 -
+2025-02-16 10:38:56,286 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:56] "GET /services/samsung HTTP/1.1" 200 -
+2025-02-16 10:38:57,934 - INFO - 127.0.0.1 - - [16/Feb/2025 10:38:57] "GET /services/nokia HTTP/1.1" 200 -
+2025-02-16 10:39:02,795 - INFO - Retrieved all services successfully
+2025-02-16 10:39:02,802 - INFO - 127.0.0.1 - - [16/Feb/2025 10:39:02] "GET /admin/services HTTP/1.1" 200 -
+2025-02-16 10:39:06,776 - INFO - Accessed Tools & Boxes page.
+2025-02-16 10:39:06,864 - INFO - 127.0.0.1 - - [16/Feb/2025 10:39:06] "GET /tools_boxes HTTP/1.1" 200 -
